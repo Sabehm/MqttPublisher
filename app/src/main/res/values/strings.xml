@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MqttClient</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="send">Enviar Mensaje</string>
+    <string name="topic">Tópico</string>
+    <string name="message">Mensaje a enviar</string>
+</resources>
