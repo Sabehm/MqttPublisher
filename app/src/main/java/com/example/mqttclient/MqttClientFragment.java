@@ -66,7 +66,6 @@ public class MqttClientFragment extends Fragment {
 
         Button button = view.findViewById(R.id.btnSend);
         final EditText editTopic = view.findViewById(R.id.edtTopic);
-        final EditText editMessage = view.findViewById(R.id.edtMessage);
 
         mqttConnection();
 
