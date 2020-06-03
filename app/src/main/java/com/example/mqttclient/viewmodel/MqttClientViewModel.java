@@ -1,10 +1,15 @@
 package com.example.mqttclient.viewmodel;
 
 import android.app.Application;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LifecycleOwner;
+
+import com.example.mqttclient.repositories.DeviceInfoJsonRepository;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -12,6 +17,7 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 
@@ -19,16 +25,19 @@ public class MqttClientViewModel extends AndroidViewModel {
 
     private static final String TAG = "MqttClientViewModel";
 
+    private DeviceInfoJsonRepository deviceInfoJsonRepository;
+
     private String clientId;
     private MqttAndroidClient client;
 
     public MqttClientViewModel(@NonNull Application application) {
         super(application);
+        deviceInfoJsonRepository = DeviceInfoJsonRepository.getInstance(getApplication().getApplicationContext());
     }
 
     public void mqttConnection() {
         clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(getApplication().getApplicationContext(), "tcp://187.193.255.25:1883",
+        client = new MqttAndroidClient(getApplication().getApplicationContext(), "tcp://broker.hivemq.com:1883",
                 clientId);
         try {
             IMqttToken token = client.connect();
@@ -51,9 +60,10 @@ public class MqttClientViewModel extends AndroidViewModel {
         }
     }
 
-    public void publish(String topic, String payload) {
-
-        byte[] encodedPayload = new byte[0];
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public String publish(String topic, LifecycleOwner lifecycleOwner) throws JSONException {
+        String payload = deviceInfoJsonRepository.getDeviceInfo(lifecycleOwner);
+        byte[] encodedPayload;
         try {
             encodedPayload = payload.getBytes("UTF-8");
             MqttMessage message = new MqttMessage(encodedPayload);
@@ -61,5 +71,6 @@ public class MqttClientViewModel extends AndroidViewModel {
         } catch (UnsupportedEncodingException | MqttException e) {
             e.printStackTrace();
         }
+        return payload;
     }
 }
