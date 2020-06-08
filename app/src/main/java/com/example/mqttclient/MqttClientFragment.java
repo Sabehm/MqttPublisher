@@ -1,7 +1,5 @@
 package com.example.mqttclient;
 
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -55,7 +53,7 @@ public class MqttClientFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        battery = new Battery(Objects.requireNonNull(getContext()));
+        battery = new Battery();
         accelerometer = new Accelerometer(Objects.requireNonNull(getContext()));
         magneticField = new MagneticField(Objects.requireNonNull(getContext()));
         light = new Light(Objects.requireNonNull(getContext()));
@@ -101,7 +99,7 @@ public class MqttClientFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        battery.register();
+        battery.register(Objects.requireNonNull(getContext()));
         accelerometer.register();
         magneticField.register();
         light.register();
@@ -111,7 +109,7 @@ public class MqttClientFragment extends Fragment {
 
     @Override
     public void onPause() {
-        battery.unregister();
+        battery.unregister(Objects.requireNonNull(getContext()));
         accelerometer.unregister();
         magneticField.unregister();
         light.unregister();

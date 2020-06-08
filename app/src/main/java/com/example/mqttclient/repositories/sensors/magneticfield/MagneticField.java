@@ -29,6 +29,7 @@ public class MagneticField implements SensorEventListener {
 
     public MagneticField(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         magneticFieldsValues = new MutableLiveData<>();
     }

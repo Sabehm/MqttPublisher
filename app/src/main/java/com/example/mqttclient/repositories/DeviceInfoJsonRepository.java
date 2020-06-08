@@ -58,7 +58,7 @@ public class DeviceInfoJsonRepository {
     public DeviceInfoJsonRepository(Context context) {
         deviceName = DeviceName.getInstance();
         operatingSystem = OperatingSystem.getInstance();
-        battery = Battery.getInstance(context);
+        battery = Battery.getInstance();
         securityPatch = SecurityPatch.getInstance();
         codename = Codename.getInstance();
         release = Release.getInstance();

@@ -29,6 +29,7 @@ public class Light implements SensorEventListener {
 
     public Light(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         lightValues = new MutableLiveData<>();
     }

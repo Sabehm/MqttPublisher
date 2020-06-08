@@ -29,6 +29,7 @@ public class StepCounter implements SensorEventListener {
 
     public StepCounter(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         stepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         stepCounterValues = new MutableLiveData<>();
     }

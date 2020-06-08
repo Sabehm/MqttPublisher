@@ -29,6 +29,7 @@ public class Proximity implements SensorEventListener {
 
     public Proximity(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         proximityValues = new MutableLiveData<>();
     }

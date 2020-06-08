@@ -13,21 +13,19 @@ public class Battery extends BroadcastReceiver {
 
     private static Battery instance;
 
-    private Context context;
     private IntentFilter intentFilter;
 
     private static MutableLiveData<String> batteryLevel;
 
-    public static Battery getInstance(Context context) {
+    public static Battery getInstance() {
         if (instance == null) {
-            instance = new Battery(context);
+            instance = new Battery();
         }
         return instance;
     }
 
-    public Battery(Context context) {
+    public Battery() {
         batteryLevel = new MutableLiveData<>();
-        this.context = context;
         intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     }
 
@@ -43,11 +41,11 @@ public class Battery extends BroadcastReceiver {
         return batteryLevel;
     }
 
-    public void register(){
+    public void register(Context context){
         context.registerReceiver(this, intentFilter);
     }
 
-    public void unregister(){
+    public void unregister(Context context){
         context.unregisterReceiver(this);
     }
 }

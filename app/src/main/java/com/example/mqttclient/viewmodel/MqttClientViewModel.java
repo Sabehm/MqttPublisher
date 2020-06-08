@@ -29,7 +29,6 @@ public class MqttClientViewModel extends AndroidViewModel {
 
     private DeviceInfoJsonRepository deviceInfoJsonRepository;
 
-    private String clientId;
     private MqttAndroidClient client;
 
     public MqttClientViewModel(@NonNull Application application) {
@@ -38,7 +37,7 @@ public class MqttClientViewModel extends AndroidViewModel {
     }
 
     public void mqttConnection() {
-        clientId = MqttClient.generateClientId();
+        String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(getApplication().getApplicationContext(),
                 getApplication().getApplicationContext().getResources().getString(R.string.brokerIp),
                 clientId);
