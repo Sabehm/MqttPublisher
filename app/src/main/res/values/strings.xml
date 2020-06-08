@@ -2,7 +2,30 @@
     <string name="app_name">MqttClient</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="brokerIp">tcp://broker.hivemq.com:1883</string>
+
     <string name="send">Enviar Mensaje</string>
     <string name="topic">Tópico</string>
-    <string name="message">Mensaje a enviar</string>
+    <string name="emptyTopic">El tópico no puede estar vacío</string>
+
+    <string name="nullable" />
+
+    <string name="model">model</string>
+    <string name="os">os</string>
+    <string name="battery">battery</string>
+    <string name="securityPatch">securityPatch</string>
+    <string name="codename">codename</string>
+    <string name="release">release</string>
+    <string name="incremental">incremental</string>
+    <string name="sensors">sensors</string>
+
+    <string name="accelerometer">accelerometer</string>
+    <string name="magneticField">magneticField</string>
+    <string name="light">light</string>
+    <string name="proximity">proximity</string>
+    <string name="stepCounter">stepCounter</string>
+
+    <string name="value">value</string>
+    <string name="type">type</string>
+    <string name="values">values</string>
 </resources>

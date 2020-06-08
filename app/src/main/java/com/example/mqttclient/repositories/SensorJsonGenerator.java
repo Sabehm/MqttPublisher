@@ -1,5 +1,9 @@
 package com.example.mqttclient.repositories;
 
+import android.content.Context;
+
+import com.example.mqttclient.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,7 +11,7 @@ import java.util.ArrayList;
 
 public class SensorJsonGenerator {
 
-    public JSONObject generate(ArrayList<Float> floatArrayList, String type) {
+    public JSONObject generate(ArrayList<Float> floatArrayList, Context context, String type) {
 
         JSONObject object = new JSONObject();
         JSONObject values = new JSONObject();
@@ -17,11 +21,11 @@ public class SensorJsonGenerator {
         if (!floatArrayList.isEmpty()) {
             try {
                 for (float aFloat : floatArrayList) {
-                    values.put(String.valueOf(new StringBuilder("value").append(counter)), aFloat);
+                    values.put(context.getResources().getString(R.string.value) + counter, aFloat);
                     counter++;
                 }
-                object.put("type", type);
-                object.put("values", values);
+                object.put(context.getResources().getString(R.string.type), type);
+                object.put(context.getResources().getString(R.string.values), values);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

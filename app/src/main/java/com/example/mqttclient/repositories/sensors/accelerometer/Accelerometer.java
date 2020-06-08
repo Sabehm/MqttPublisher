@@ -29,6 +29,7 @@ public class Accelerometer implements SensorEventListener {
 
     public Accelerometer(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         accelerometerValues = new MutableLiveData<>();
 

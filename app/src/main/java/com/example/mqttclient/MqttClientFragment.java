@@ -1,5 +1,7 @@
 package com.example.mqttclient;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -14,12 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.mqttclient.repositories.sensors.light.Light;
 import com.example.mqttclient.repositories.sensors.accelerometer.Accelerometer;
 import com.example.mqttclient.repositories.sensors.magneticfield.MagneticField;
 import com.example.mqttclient.repositories.sensors.proximity.Proximity;
 import com.example.mqttclient.repositories.sensors.stepcounter.StepCounter;
+import com.example.mqttclient.repositories.system.Battery;
 import com.example.mqttclient.viewmodel.MqttClientViewModel;
 
 import org.json.JSONException;
@@ -35,6 +39,7 @@ public class MqttClientFragment extends Fragment {
     private static final String TAG = "MqttClientFragment";
 
     private MqttClientViewModel mqttClientViewModel;
+    private Battery battery;
     private Accelerometer accelerometer;
     private MagneticField magneticField;
     private Light light;
@@ -50,6 +55,7 @@ public class MqttClientFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        battery = new Battery(Objects.requireNonNull(getContext()));
         accelerometer = new Accelerometer(Objects.requireNonNull(getContext()));
         magneticField = new MagneticField(Objects.requireNonNull(getContext()));
         light = new Light(Objects.requireNonNull(getContext()));
@@ -73,14 +79,21 @@ public class MqttClientFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view1) {
-                String payload = null;
-                try {
-                    payload = publish(editTopic.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (!editTopic.getText().toString().equals(getResources().getString(R.string.nullable))) {
+                    String payload = null;
+                    try {
+                        payload = publish(editTopic.getText().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG, "onViewCreated: Pressed... Trying to send: " +
+                            payload + " (topic: " + editTopic.getText().toString() + ")");
                 }
-                Log.d(TAG, "onViewCreated: Pressed... Trying to send: " +
-                        payload + " (topic: " + editTopic.getText().toString() + ")");
+                else {
+                    Toast emptyTopic = Toast.makeText(getActivity(),
+                            getResources().getString(R.string.emptyTopic), Toast.LENGTH_LONG);
+                    emptyTopic.show();
+                }
             }
         });
     }
@@ -88,6 +101,7 @@ public class MqttClientFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        battery.register();
         accelerometer.register();
         magneticField.register();
         light.register();
@@ -97,6 +111,7 @@ public class MqttClientFragment extends Fragment {
 
     @Override
     public void onPause() {
+        battery.unregister();
         accelerometer.unregister();
         magneticField.unregister();
         light.unregister();
@@ -111,6 +126,6 @@ public class MqttClientFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private String publish(String topic) throws JSONException {
-        return mqttClientViewModel.publish(topic, getViewLifecycleOwner());
+        return mqttClientViewModel.publish(topic, getViewLifecycleOwner(), Objects.requireNonNull(getContext()));
     }
 }
