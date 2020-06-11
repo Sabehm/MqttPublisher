@@ -4,8 +4,6 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 
 import com.example.mqttclient.R;
 import com.example.mqttclient.repositories.sensors.light.Light;
@@ -25,8 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class DeviceInfoJsonRepository {
 
     private static DeviceInfoJsonRepository instance;
@@ -45,7 +41,6 @@ public class DeviceInfoJsonRepository {
     private StepCounter stepCounter;
 
     private JSONObject deviceInfo;
-    private JSONArray sensors;
     private JSONObject sensorDetail;
 
     public static DeviceInfoJsonRepository getInstance(Context context) {
@@ -73,81 +68,57 @@ public class DeviceInfoJsonRepository {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public String getDeviceInfo(LifecycleOwner lifecycleOwner, final Context context) throws JSONException {
+    public String getDeviceInfo(final Context context) throws JSONException {
 
         deviceInfo.put(context.getResources().getString(R.string.model), deviceName.getDeviceName());
         deviceInfo.put(context.getResources().getString(R.string.os), operatingSystem.getOS());
-        battery.getBatteryLevel().observe(lifecycleOwner, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                try {
-                    deviceInfo.put(context.getResources().getString(R.string.battery), s);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        deviceInfo.put(context.getResources().getString(R.string.battery), battery.getBatteryLevel());
         deviceInfo.put(context.getResources().getString(R.string.securityPatch), securityPatch.getLastSecurityPatch());
         deviceInfo.put(context.getResources().getString(R.string.codename), codename.getCodename());
         deviceInfo.put(context.getResources().getString(R.string.release), release.getRelease());
         deviceInfo.put(context.getResources().getString(R.string.incremental), incremental.getIncremental());
-        deviceInfo.put(context.getResources().getString(R.string.sensors), getSensors(lifecycleOwner, context));
+        deviceInfo.put(context.getResources().getString(R.string.sensors), getSensors(context));
 
         return deviceInfo.toString();
     }
 
-    private JSONArray getSensors(LifecycleOwner lifecycleOwner, final Context context) {
-        sensors = new JSONArray();
-        accelerometer.getAccelerometerValues().observe(lifecycleOwner, new Observer<ArrayList<Float>>() {
-            @Override
-            public void onChanged(ArrayList<Float> floatArrayList) {
-                if ((sensorDetail = new SensorJsonGenerator().generate(floatArrayList, context,
-                        context.getResources().getString(R.string.accelerometer))) != null) {
-                    sensors.put(sensorDetail);
-                }
-            }
-        });
+    private JSONArray getSensors(Context context) {
+        JSONArray sensors = new JSONArray();
 
-        magneticField.getMagneticFieldValues().observe(lifecycleOwner, new Observer<ArrayList<Float>>() {
-            @Override
-            public void onChanged(ArrayList<Float> floatArrayList) {
-                if ((sensorDetail = new SensorJsonGenerator().generate(floatArrayList, context,
-                        context.getResources().getString(R.string.magneticField))) != null) {
-                    sensors.put(sensorDetail);
-                }
-            }
-        });
+        if ((sensorDetail = new SensorJsonGenerator().generate(accelerometer.getAccelerometerValues(), context,
+                context.getResources().getString(R.string.accelerometer))) != null) {
+            sensors.put(sensorDetail);
+        }
 
-        light.getLightValues().observe(lifecycleOwner, new Observer<ArrayList<Float>>() {
-            @Override
-            public void onChanged(ArrayList<Float> floatArrayList) {
-                if ((sensorDetail = new SensorJsonGenerator().generate(floatArrayList, context,
-                        context.getResources().getString(R.string.light))) != null) {
-                    sensors.put(sensorDetail);
-                }
-            }
-        });
+        if ((sensorDetail = new SensorJsonGenerator().generate(magneticField.getMagneticFieldValues(), context,
+                context.getResources().getString(R.string.magneticField))) != null) {
+            sensors.put(sensorDetail);
+        }
 
-        proximity.getLightValues().observe(lifecycleOwner, new Observer<ArrayList<Float>>() {
-            @Override
-            public void onChanged(ArrayList<Float> floatArrayList) {
-                if ((sensorDetail = new SensorJsonGenerator().generate(floatArrayList, context,
-                        context.getResources().getString(R.string.proximity))) != null) {
-                    sensors.put(sensorDetail);
-                }
-            }
-        });
+        if ((sensorDetail = new SensorJsonGenerator().generate(light.getLightValues(), context,
+                context.getResources().getString(R.string.light))) != null) {
+            sensors.put(sensorDetail);
+        }
 
-        stepCounter.getStepCounterValues().observe(lifecycleOwner, new Observer<ArrayList<Float>>() {
-            @Override
-            public void onChanged(ArrayList<Float> floatArrayList) {
-                if ((sensorDetail = new SensorJsonGenerator().generate(floatArrayList, context,
-                        context.getResources().getString(R.string.stepCounter))) != null) {
-                    sensors.put(sensorDetail);
-                }
-            }
-        });
+        if ((sensorDetail = new SensorJsonGenerator().generate(proximity.getLightValues(), context,
+                context.getResources().getString(R.string.proximity))) != null) {
+            sensors.put(sensorDetail);
+        }
+
+        if ((sensorDetail = new SensorJsonGenerator().generate(stepCounter.getStepCounterValues(), context,
+                context.getResources().getString(R.string.stepCounter))) != null) {
+            sensors.put(sensorDetail);
+        }
 
         return sensors;
+    }
+
+    public void registerSensors(Context context) {
+        battery.register(context);
+        accelerometer.register();
+        magneticField.register();
+        light.register();
+        proximity.register();
+        stepCounter.register();
     }
 }

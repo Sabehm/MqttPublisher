@@ -6,9 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 
 public class Light implements SensorEventListener {
@@ -18,7 +15,7 @@ public class Light implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor light;
 
-    private static MutableLiveData<ArrayList<Float>> lightValues;
+    private static ArrayList<Float> lightValues;
 
     public static Light getInstance(Context context) {
         if (instance == null) {
@@ -29,9 +26,10 @@ public class Light implements SensorEventListener {
 
     public Light(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        assert sensorManager != null;
-        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        lightValues = new MutableLiveData<>();
+        if (sensorManager != null) {
+            light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        }
+        lightValues = new ArrayList<>();
     }
 
     @Override
@@ -39,10 +37,10 @@ public class Light implements SensorEventListener {
         if (light != null) {
             ArrayList<Float> arrayList = new ArrayList<>();
             arrayList.add(sensorEvent.values[0]);
-            lightValues.setValue(arrayList);
+            setLightValues(arrayList);
         }
         else {
-            lightValues.setValue(null);
+            setLightValues(null);
         }
     }
 
@@ -51,8 +49,12 @@ public class Light implements SensorEventListener {
 
     }
 
-    public LiveData<ArrayList<Float>> getLightValues() {
+    public ArrayList<Float> getLightValues() {
         return lightValues;
+    }
+
+    private void setLightValues(ArrayList<Float> arrayList) {
+        lightValues = arrayList;
     }
 
     public void register(){

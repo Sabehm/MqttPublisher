@@ -6,16 +6,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 public class Battery extends BroadcastReceiver {
 
     private static Battery instance;
 
     private IntentFilter intentFilter;
 
-    private static MutableLiveData<String> batteryLevel;
+    private static String batteryLevel;
 
     public static Battery getInstance() {
         if (instance == null) {
@@ -25,7 +22,7 @@ public class Battery extends BroadcastReceiver {
     }
 
     public Battery() {
-        batteryLevel = new MutableLiveData<>();
+        batteryLevel = "";
         intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     }
 
@@ -34,11 +31,15 @@ public class Battery extends BroadcastReceiver {
         int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL,-1);
         int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE,-1);
         int batteryPercentage = (level * 100) / scale;
-        batteryLevel.setValue(batteryPercentage + "%");
+        setBatteryLevel(batteryPercentage + "%");
     }
 
-    public LiveData<String> getBatteryLevel() {
+    public String getBatteryLevel() {
         return batteryLevel;
+    }
+
+    private void setBatteryLevel(String string) {
+        batteryLevel = string;
     }
 
     public void register(Context context){

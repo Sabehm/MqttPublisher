@@ -6,9 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 
 public class Proximity implements SensorEventListener {
@@ -18,7 +15,7 @@ public class Proximity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor proximity;
 
-    private static MutableLiveData<ArrayList<Float>> proximityValues;
+    private static ArrayList<Float> proximityValues;
 
     public static Proximity getInstance(Context context) {
         if (instance == null) {
@@ -29,9 +26,10 @@ public class Proximity implements SensorEventListener {
 
     public Proximity(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        assert sensorManager != null;
-        proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        proximityValues = new MutableLiveData<>();
+        if (sensorManager != null) {
+            proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        }
+        proximityValues = new ArrayList<>();
     }
 
     @Override
@@ -39,7 +37,10 @@ public class Proximity implements SensorEventListener {
         if (proximity != null) {
             ArrayList<Float> arrayList = new ArrayList<>();
             arrayList.add(sensorEvent.values[0]);
-            proximityValues.setValue(arrayList);
+            setProximityValues(arrayList);
+        }
+        else {
+            setProximityValues(null);
         }
     }
 
@@ -48,8 +49,12 @@ public class Proximity implements SensorEventListener {
 
     }
 
-    public LiveData<ArrayList<Float>> getLightValues() {
+    public ArrayList<Float> getLightValues() {
         return proximityValues;
+    }
+
+    private void setProximityValues(ArrayList<Float> arrayList) {
+        proximityValues = arrayList;
     }
 
     public void register(){

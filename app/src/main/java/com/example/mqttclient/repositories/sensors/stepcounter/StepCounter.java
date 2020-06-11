@@ -6,9 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 
 public class StepCounter implements SensorEventListener {
@@ -18,7 +15,7 @@ public class StepCounter implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor stepCounter;
 
-    private static MutableLiveData<ArrayList<Float>> stepCounterValues;
+    private static ArrayList<Float> stepCounterValues;
 
     public static StepCounter getInstance(Context context) {
         if (instance == null) {
@@ -29,9 +26,10 @@ public class StepCounter implements SensorEventListener {
 
     public StepCounter(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        assert sensorManager != null;
-        stepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        stepCounterValues = new MutableLiveData<>();
+        if (sensorManager != null) {
+            stepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        }
+        stepCounterValues = new ArrayList<>();
     }
 
     @Override
@@ -39,7 +37,10 @@ public class StepCounter implements SensorEventListener {
         if (stepCounter != null) {
             ArrayList<Float> arrayList = new ArrayList<>();
             arrayList.add(sensorEvent.values[0]);
-            stepCounterValues.setValue(arrayList);
+            setStepCounterValues(arrayList);
+        }
+        else {
+            setStepCounterValues(null);
         }
     }
 
@@ -48,8 +49,12 @@ public class StepCounter implements SensorEventListener {
 
     }
 
-    public LiveData<ArrayList<Float>> getStepCounterValues() {
+    public ArrayList<Float> getStepCounterValues() {
         return stepCounterValues;
+    }
+
+    private void setStepCounterValues(ArrayList<Float> arrayList) {
+        stepCounterValues = arrayList;
     }
 
     public void register() {

@@ -1,16 +1,12 @@
-package com.example.mqttclient.viewmodel;
+package com.example.mqttclient;
 
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LifecycleOwner;
 
-import com.example.mqttclient.R;
 import com.example.mqttclient.repositories.DeviceInfoJsonRepository;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -21,39 +17,42 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class MqttClientViewModel extends AndroidViewModel {
+public class MqttApplication extends Application {
 
-    private static final String TAG = "MqttClientViewModel";
-
-    private DeviceInfoJsonRepository deviceInfoJsonRepository;
 
     private MqttAndroidClient client;
+    public DeviceInfoJsonRepository deviceInfoJsonRepository;
+    public static MqttApplication application;
 
-    public MqttClientViewModel(@NonNull Application application) {
-        super(application);
-        deviceInfoJsonRepository = DeviceInfoJsonRepository.getInstance(getApplication().getApplicationContext());
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mqttConnection();
+        application = this;
+        deviceInfoJsonRepository = DeviceInfoJsonRepository.getInstance(this);
+
+
     }
 
     public void mqttConnection() {
         String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(getApplication().getApplicationContext(),
-                getApplication().getApplicationContext().getResources().getString(R.string.brokerIp),
-                clientId);
+        client = new MqttAndroidClient(this, getResources().getString(R.string.brokerIp), clientId);
         try {
             IMqttToken token = client.connect();
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
-                    Log.d(TAG, "onSuccess");
+                    Log.d("TAG", "onSuccess");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
-                    Log.d(TAG, "onFailure");
+                    Log.d("TAG", "onFailure");
 
                 }
             });
@@ -63,8 +62,8 @@ public class MqttClientViewModel extends AndroidViewModel {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public String publish(String topic, LifecycleOwner lifecycleOwner, Context context) throws JSONException {
-        String payload = deviceInfoJsonRepository.getDeviceInfo(lifecycleOwner, context);
+    public String publish(String topic) throws JSONException {
+        String payload = deviceInfoJsonRepository.getDeviceInfo(this);
         byte[] encodedPayload;
         try {
             encodedPayload = payload.getBytes(UTF_8);

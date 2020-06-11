@@ -6,9 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 
 public class MagneticField implements SensorEventListener {
@@ -18,7 +15,7 @@ public class MagneticField implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor magneticField;
 
-    private static MutableLiveData<ArrayList<Float>> magneticFieldsValues;
+    private static ArrayList<Float> magneticFieldsValues;
 
     public static MagneticField getInstance(Context context) {
         if (instance == null) {
@@ -29,9 +26,10 @@ public class MagneticField implements SensorEventListener {
 
     public MagneticField(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        assert sensorManager != null;
-        magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        magneticFieldsValues = new MutableLiveData<>();
+        if (sensorManager != null) {
+            magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        }
+        magneticFieldsValues = new ArrayList<>();
     }
 
     @Override
@@ -41,10 +39,10 @@ public class MagneticField implements SensorEventListener {
             arrayList.add(sensorEvent.values[0]);
             arrayList.add(sensorEvent.values[1]);
             arrayList.add(sensorEvent.values[2]);
-            magneticFieldsValues.setValue(arrayList);
+            setMagneticFieldsValues(arrayList);
         }
         else {
-            magneticFieldsValues.setValue(null);
+            setMagneticFieldsValues(null);
         }
     }
 
@@ -53,8 +51,12 @@ public class MagneticField implements SensorEventListener {
 
     }
 
-    public LiveData<ArrayList<Float>> getMagneticFieldValues() {
+    public ArrayList<Float> getMagneticFieldValues() {
         return magneticFieldsValues;
+    }
+
+    private void setMagneticFieldsValues(ArrayList<Float> arrayList) {
+        magneticFieldsValues = arrayList;
     }
 
     public void register(){

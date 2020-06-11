@@ -6,9 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 
 public class Accelerometer implements SensorEventListener {
@@ -18,7 +15,7 @@ public class Accelerometer implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
-    private static MutableLiveData<ArrayList<Float>> accelerometerValues;
+    private static ArrayList<Float> accelerometerValues;
 
     public static Accelerometer getInstance(Context context) {
         if (instance == null) {
@@ -27,12 +24,12 @@ public class Accelerometer implements SensorEventListener {
         return instance;
     }
 
-    public Accelerometer(Context context) {
+    private Accelerometer(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        assert sensorManager != null;
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        accelerometerValues = new MutableLiveData<>();
-
+        if (sensorManager != null) {
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
+        accelerometerValues = new ArrayList<>();
     }
 
     @Override
@@ -42,10 +39,10 @@ public class Accelerometer implements SensorEventListener {
             arrayList.add(sensorEvent.values[0]);
             arrayList.add(sensorEvent.values[1]);
             arrayList.add(sensorEvent.values[2]);
-            accelerometerValues.setValue(arrayList);
+            setAccelerometerValues(arrayList);
         }
         else {
-            accelerometerValues.setValue(null);
+            setAccelerometerValues(null);
         }
     }
 
@@ -54,8 +51,12 @@ public class Accelerometer implements SensorEventListener {
 
     }
 
-    public LiveData<ArrayList<Float>> getAccelerometerValues() {
+    public ArrayList<Float> getAccelerometerValues() {
         return accelerometerValues;
+    }
+
+    private void setAccelerometerValues(ArrayList<Float> arrayList) {
+        accelerometerValues = arrayList;
     }
 
     public void register(){
