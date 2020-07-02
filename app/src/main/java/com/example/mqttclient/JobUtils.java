@@ -6,13 +6,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.mqttclient.repositories.JobSensor;
-
 public class JobUtils {
 
     private static final String TAG = "JobUtils";
 
-    public void scheduleJob (Context context) {
+/*    public void scheduleJob (Context context) {
         ComponentName componentName = new ComponentName(context, JobSensor.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
         .setRequiresCharging(false)
@@ -34,10 +32,10 @@ public class JobUtils {
     }
 
     public void cancelJob(Context context) {
-            JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            scheduler.cancel(123);
-            Log.d(TAG, "Job cancelled");
-            }
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        scheduler.cancel(123);
+        Log.d(TAG, "Job cancelled");
+    }*/
 }
 /*
 fun startJobLocation(context: Context) {

@@ -33,8 +33,6 @@ public class MqttApplication extends Application {
         mqttConnection();
         application = this;
         deviceInfoJsonRepository = DeviceInfoJsonRepository.getInstance(this);
-
-
     }
 
     public void mqttConnection() {

@@ -65,6 +65,7 @@ public class DeviceInfoJsonRepository {
         stepCounter = StepCounter.getInstance(context);
         deviceInfo = new JSONObject();
         sensorDetail = new JSONObject();
+        registerSensors(context);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

@@ -23,9 +23,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- BroadcastReceiver that starts MqttConnectionManagerService on device boot -->
+        <receiver android:name=".MqttServiceStartReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Services required for using MQTT -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-        <service android:name=".repositories.JobSensor"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:name=".MqttConnectionManagerService" />
     </application>
 
 </manifest>
